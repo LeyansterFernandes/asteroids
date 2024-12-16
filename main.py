@@ -5,7 +5,8 @@ pygame.init()
 
 #Main game loop
 screen = pygame.display.set_mode((400,500))
-
+clock = pygame.time.Clock()
+framerate = 60
 
 while True:
     for event in pygame.event.get():
@@ -14,4 +15,5 @@ while True:
             sys.exit
 
     pygame.display.update()
+    clock.tick(framerate)
 
