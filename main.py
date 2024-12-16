@@ -1,11 +1,17 @@
 import pygame
-import constants # type: ignore
+import sys
+
+pygame.init()
+
+#Main game loop
+screen = pygame.display.set_mode((400,500))
 
 
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit
 
-def main():
-    print(constants.SCREEN_WIDTH)
-    print(constants.SCREEN_HEIGHT)
+    pygame.display.update()
 
-if __name__ == "__main__":
-    main()
