@@ -6,8 +6,9 @@ import random
 class SNAKE:
     
     def __init__(self) :    
-        self.body = [ Vector2(5,10), Vector2(6,10), Vector2(7, 10) ]
+        self.body = [ Vector2(5,10), Vector2(4,10), Vector2(3, 10) ]
         self.direction = Vector2(1,0)
+        self.new_block = False
 
     def draw_snake(self) :
         for block in self.body:
@@ -17,9 +18,18 @@ class SNAKE:
             pygame.draw.rect(screen,(183,111,122),snake_block_rect)
 
     def move_snake(self):
-        body_copy = self.body[:-1]
-        body_copy.insert(0, body_copy[0] + self.direction)
-        self.body = body_copy[:]
+        if self.new_block:
+            body_copy = self.body[:]
+            body_copy.insert(0, body_copy[0] + self.direction)
+            self.body = body_copy[:]
+            self.new_block = False
+        else:   
+            body_copy = self.body[:-1]
+            body_copy.insert(0, body_copy[0] + self.direction)
+            self.body = body_copy[:]
+        
+    def add_block(self):
+        self.new_block = True
 
 
 class FRUIT:
@@ -58,6 +68,7 @@ class MAIN:
     def update(self):
         self.snake.move_snake()
         self.check_snake_fruit_collision()
+        self.check_fail()
         
     def check_snake_fruit_collision(self):
         
@@ -68,7 +79,31 @@ class MAIN:
             # Reposition the fruit to new positon
             self.fruit.randomise()
             
-            # Add one more thing to the snake
+            # Add one more block to the snake
+            self.snake.add_block()
+    
+    def check_fail(self):
+        
+        # check if snake is outside of the screen
+        
+        if not 0 <= self.snake.body[0].x < cell_number:
+            self.game_over()
+            
+        if not 0 <= self.snake.body[0].y < cell_number:
+            self.game_over()
+            
+            
+        #
+        for block in self.snake.body[1:]:
+            if block == self.snake.body[0]:
+                self.game_over()
+        
+    def game_over(self):
+        pygame.quit()
+        sys.exit()
+        
+        
+        # check if snake hits it self
         
         
 # Initialise All Pygame Modules
@@ -102,17 +137,22 @@ while True:
             
         if event.type == pygame.KEYDOWN:
             
+            
             if event.key == pygame.K_UP:
-                main_game.snake.direction = Vector2(0, -1)
+                if main_game.snake.direction.y != 1:
+                    main_game.snake.direction = Vector2(0, -1)
                 
             if event.key == pygame.K_DOWN:
-                main_game.snake.direction = Vector2(0, 1)
+                if main_game.snake.direction.y != -1:
+                    main_game.snake.direction = Vector2(0, 1)
                 
             if event.key == pygame.K_LEFT:
-                main_game.snake.direction = Vector2(-1, 0)
+                if main_game.snake.direction.x != 1:
+                    main_game.snake.direction = Vector2(-1, 0)
                 
             if event.key == pygame.K_RIGHT:
-                main_game.snake.direction = Vector2(1, 0)
+                if main_game.snake.direction.x != -1:
+                    main_game.snake.direction = Vector2(1, 0)
 
 
     screen.fill((175,215,70))
