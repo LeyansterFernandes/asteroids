@@ -24,12 +24,7 @@ class SNAKE:
 
 class FRUIT:
     def __init__(self):
-        # Randomly determine an x and y position
-        self.x = random.randint(0,cell_number - 1) # Subtracting 1 to show that we are always on screen ( within boundaries )
-        self.y = random.randint(0,cell_number - 1 )
-        
-        # Store x and y coordinates on a vector
-        self.pos = Vector2(self.x,self.y)
+        self.randomise()
         # draw a square
         
     def draw_fruit(self):
@@ -37,33 +32,64 @@ class FRUIT:
         x_pos = self.pos.x * cell_size
         y_pos = self.pos.y * cell_size
         fruit_rect = pygame.Rect(int (x_pos), int (y_pos), cell_size, cell_size)
-        pygame.draw.rect(screen, (126,166,114), fruit_rect)
         
         # draw the rectangle
+        pygame.draw.rect(screen, (126,166,114), fruit_rect)
         
-       
+    def randomise(self):
+                # Randomly determine an x and y position
+        self.x = random.randint(0,cell_number - 1) # Subtracting 1 to show that we are always on screen ( within boundaries )
+        self.y = random.randint(0,cell_number - 1 )
+        
+        # Store x and y coordinates on a vector
+        self.pos = Vector2(self.x,self.y)
+        
+        
+
+class MAIN:
+    def __init__(self):
+        self.snake = SNAKE()
+        self.fruit = FRUIT()
+        
+    def draw_elements(self):
+           self.fruit.draw_fruit()
+           self.snake.draw_snake()
+        
+    def update(self):
+        self.snake.move_snake()
+        self.check_snake_fruit_collision()
+        
+    def check_snake_fruit_collision(self):
+        
+        # When snake head interacts with fruit ( Eating the fruit effectively)
+        if self.fruit.pos == self.snake.body[0]:
+            print("snackkkeed")
+            
+            # Reposition the fruit to new positon
+            self.fruit.randomise()
+            
+            # Add one more thing to the snake
+        
+        
 # Initialise All Pygame Modules
 pygame.init()
 cell_size = 40
 cell_number = 20
 
-# Main game loop
+        
+main_game = MAIN()        
+       
+
+
+# Config
 screen = pygame.display.set_mode((cell_number * cell_size, cell_size * cell_number))
 clock = pygame.time.Clock()
 framerate = 60
-test_surface = pygame.Surface((100,200))
-test_surface.fill((0,0,255))
-x = 100
-y = 200
-w = 100
-h = 100
-
-fruit = FRUIT()
-snake = SNAKE()
-
 SCREEN_UPDATE = pygame.USEREVENT
 pygame.time.set_timer(SCREEN_UPDATE,150)
 
+
+# Game Loop
 while True:
     
     for event in pygame.event.get():
@@ -72,25 +98,25 @@ while True:
             sys.exit
             
         if event.type == SCREEN_UPDATE:
-            snake.move_snake()
+            main_game.update()
             
         if event.type == pygame.KEYDOWN:
             
             if event.key == pygame.K_UP:
-                snake.direction = Vector2(0, -1)
+                main_game.snake.direction = Vector2(0, -1)
                 
             if event.key == pygame.K_DOWN:
-                snake.direction = Vector2(0, 1)
+                main_game.snake.direction = Vector2(0, 1)
                 
             if event.key == pygame.K_LEFT:
-                snake.direction = Vector2(-1, 0)
+                main_game.snake.direction = Vector2(-1, 0)
                 
             if event.key == pygame.K_RIGHT:
-                snake.direction = Vector2(1, 0)
+                main_game.snake.direction = Vector2(1, 0)
+
 
     screen.fill((175,215,70))
-    fruit.draw_fruit()
-    snake.draw_snake()
+    main_game.draw_elements()
     pygame.display.update()
     clock.tick(framerate)
 
